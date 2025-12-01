@@ -56,39 +56,36 @@ db.pokemon.deleteOne({ numeroPokedex: 151 });
 
 // =================== Étape 1 : récupérer dresseur + espèce ===================
 
-const d = db.dresseur.findOne({ idDresseur: "DR001" });
-const especePika = db.pokemon.findOne({ numeroPokedex: 25 });
-const objet = db.objet.findOne({ nom: "Orbe Vie" }); // peut être null
 
 db.pokemons_captures.insertOne({
-  idDresseur: d._id,
-  idEspece: especePika._id,
+  idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id,
+  idEspece: db.pokemon.findOne({ numeroPokedex: 25 })._id,
   surnom: "PikaLeRoi",
   niveau: 42,
   experience: 152340,
-  idObjet: objet ? objet._id : null,
+  idObjet: db.objet.findOne({ nom: "Orbe Vie" }) ? db.objet.findOne({ nom: "Orbe Vie" })._id : null,
   dateCapture: new Date()
 });
+
 
 // =================== Étape 2 : mettre à jour stats dresseur ===================
 
 db.dresseur.updateOne(
-  { _id: d._id },
+  { idDresseur: "DR001" },
   { $inc: { "stats.totalPokemon": 1 } }
 );
 
+
 // =================== Étape 3 : enregistrement au Centre Pokémon ===================
 
-const centre = db.centre_pokemon.findOne(); // on prend le premier centre pour simplifier
-
 db.centre_pokemon.updateOne(
-  { _id: centre._id },
+  { _id: db.centre_pokemon.findOne()._id },
   {
     $inc: { stockActuel: 1 },
     $push: {
       historiqueMouvements: {
         idPokemonCapture: db.pokemons_captures.findOne({ surnom: "PikaLeRoi" })._id,
-        idDresseur: d._id,
+        idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id,
         type: "ENTREE",
         date: new Date()
       }
@@ -165,39 +162,43 @@ db.pokemons_captures.aggregate([
 // DELETE Pokémon capturé
 // =====================================
 
-const cible = db.pokemons_captures.findOne({ surnom: "PikaChampion" });
-
-if (cible) {
 
   // 1) retirer du dresseur (stats + équipe + favoris)
   db.dresseur.updateOne(
-    { _id: cible.idDresseur },
-    {
-      $inc: { "stats.totalPokemon": -1 },
-      $pull: {
-        equipe: cible._id
-      }
+  { _id: db.pokemons_captures.findOne({ surnom: "PikaChampion" }).idDresseur },
+  {
+    $inc: { "stats.totalPokemon": -1 },
+    $pull: {
+      equipe: db.pokemons_captures.findOne({ surnom: "PikaChampion" })._id
     }
-  );
+  }
+);
+
 
   // 2) supprimer du pokémon capturé
-  db.pokemons_captures.deleteOne({ _id: cible._id });
+  db.pokemons_captures.deleteOne({
+  _id: db.pokemons_captures.findOne({ surnom: "PikaChampion" })._id
+});
+
 
   // 3) enregistrer la sortie dans le centre Pokémon
   db.centre_pokemon.updateOne(
-    { },
-    {
-      $inc: { stockActuel: -1 },
-      $push: {
-        historiqueMouvements: {
-          idPokemonCapture: cible._id,
-          idDresseur: cible.idDresseur,
-          type: "SORTIE",
-          date: new Date()
-        }
+  {},
+  {
+    $inc: { stockActuel: -1 },
+    $push: {
+      historiqueMouvements: {
+        idPokemonCapture: db.pokemons_captures.findOne({ surnom: "PikaChampion" }) 
+          ? db.pokemons_captures.findOne({ surnom: "PikaChampion" })._id 
+          : null,
+        idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id,
+        type: "SORTIE",
+        date: new Date()
       }
     }
-  );
-}
+  }
+);
+
+
 
 print("\n=== CRUD Pokémon terminé ===\n");

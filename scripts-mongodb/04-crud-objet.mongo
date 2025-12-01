@@ -88,18 +88,18 @@ db.objet.updateOne(
 // doit avoir idObjet = null
 //
 
-const obj = db.objet.findOne({ nom: "Orbe Vie" });
-
-if (obj) {
 
   // 1) retirer l'objet de tous les Pokémon capturés
   db.pokemons_captures.updateMany(
-    { idObjet: obj._id },
-    { $set: { idObjet: null } }
-  );
+  { idObjet: db.objet.findOne({ nom: "Orbe Vie" })._id },
+  { $set: { idObjet: null } }
+);
+
 
   // 2) supprimer l'objet
-  db.objet.deleteOne({ _id: obj._id });
-}
+  db.objet.deleteOne({
+  _id: db.objet.findOne({ nom: "Orbe Vie" })._id
+});
+
 
 print("\n=== CRUD Objets terminé ===\n");

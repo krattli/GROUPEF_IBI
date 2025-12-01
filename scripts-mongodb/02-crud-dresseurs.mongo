@@ -111,11 +111,13 @@ db.dresseur.updateOne(
 
 // Supprimer un dresseur et ses Pokémon capturés
 
-const dresseur = db.dresseur.findOne({ idDresseur: "DR001" });
+db.pokemons_captures.deleteMany({
+  idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id
+});
 
-if (dresseur) {
-  db.pokemons_captures.deleteMany({ idDresseur: dresseur._id });
-  db.dresseur.deleteOne({ _id: dresseur._id });
-}
+db.dresseur.deleteOne({
+  idDresseur: "DR001"
+});
+
 
 print("\n=== CRUD Dresseurs exécuté ===\n");
