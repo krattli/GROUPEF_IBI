@@ -1,0 +1,121 @@
+// =====================================
+// SCRIPT 02 : CRUD DRESSEURS
+// =====================================
+
+use('pokedex');
+
+print("\n=== CRUD Dresseurs ===\n");
+
+// =====================================
+// CREATE
+// =====================================
+
+// Créer un dresseur
+db.dresseur.insertOne({
+  nom: "Sacha",
+  idDresseur: "DR001",
+  dateCreation: new Date(),
+  stats: {
+    totalPokemon: 0
+  },
+  equipe: [] // équipe vide au départ
+});
+
+db.dresseur.insertOne({
+  nom: "Ondine",
+  idDresseur: "DR002",
+  dateCreation: new Date(),
+  stats: {
+    totalPokemon: 0
+  },
+  equipe: []
+});
+
+db.dresseur.insertOne({
+  nom: "Pierre",
+  idDresseur: "DR003",
+  dateCreation: new Date(),
+  stats: {
+    totalPokemon: 0
+  },
+  equipe: []
+});
+
+
+// =====================================
+// READ
+// =====================================
+
+// Lire tous les dresseurs
+db.dresseur.find();
+
+// Lire un dresseur par son ID "DRxxx"
+db.dresseur.findOne({ idDresseur: "DR001" });
+
+// Recherche partielle par nom
+db.dresseur.find({ nom: { $regex: "sa", $options: "i" } });
+
+
+// =====================================
+// UPDATE — Informations simples
+// =====================================
+
+// Modifier le nom d’un dresseur
+db.dresseur.updateOne(
+  { idDresseur: "DR001" },
+  { $set: { nom: "Sacha Ketchum" } }
+);
+
+
+// =====================================
+// UPDATE — Gestion de l’équipe (max 6 Pokémon)
+// =====================================
+
+// Ajouter un Pokémon dans l’équipe d’un dresseur
+// ⚠ Vérifie automatiquement qu’il y a moins de 6 Pokémon
+
+db.dresseur.updateOne(
+  { 
+    idDresseur: "DR001",
+    $expr: { $lt: [{ $size: "$equipe" }, 6] } 
+  },
+  {
+    $addToSet: { equipe: ObjectId("000000000000000000000000") }
+  }
+);
+
+// Retirer un Pokémon de l’équipe
+db.dresseur.updateOne(
+  { idDresseur: "DR001" },
+  {
+    $pull: { equipe: ObjectId("000000000000000000000000") }
+  }
+);
+
+
+// =====================================
+// UPDATE — Statistiques automatiques
+// =====================================
+
+// Incrémenter le nombre total de Pokémon possédés
+db.dresseur.updateOne(
+  { idDresseur: "DR001" },
+  { $inc: { "stats.totalPokemon": 1 } }
+);
+
+
+
+// =====================================
+// DELETE
+// =====================================
+
+// Supprimer un dresseur et ses Pokémon capturés
+
+const dresseur = db.dresseur.findOne({ idDresseur: "DR001" });
+
+if (dresseur) {
+  db.pokemons_captures.deleteMany({ idDresseur: dresseur._id });
+  db.dresseur.deleteOne({ _id: dresseur._id });
+}
+
+print("\n=== CRUD Dresseurs exécuté ===\n");

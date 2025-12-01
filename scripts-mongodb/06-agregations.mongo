@@ -1,0 +1,362 @@
+// ======================================================
+// SCRIPT 06 : AGRÉGATIONS AVANCÉES POUR LE PROJET POKEDEX
+// ======================================================
+
+use('pokedex');
+
+print("\n=== AGRÉGATIONS AVANCÉES ===\n");
+
+
+// ======================================================
+// 1) STAT TOTALE RÉELLE (ESPÈCE + OBJET)
+// ======================================================
+//
+// Objectif : obtenir la stat totale réelle d’un Pokémon capturé :
+// - stat.base = somme des stats de l'espèce
+// - stat.bonus = calcul en fonction du bonus d’objet (flat ou percent)
+// - statFinale = base + bonus
+//
+
+db.pokemons_captures.aggregate([
+  {
+    $lookup: {
+      from: "pokemon",
+      localField: "idEspece",
+      foreignField: "_id",
+      as: "espece"
+    }
+  },
+  { $unwind: "$espece" },
+
+  {
+    $lookup: {
+      from: "objet",
+      localField: "idObjet",
+      foreignField: "_id",
+      as: "objet"
+    }
+  },
+  { $unwind: { path: "$objet", preserveNullAndEmptyArrays: true } },
+
+  {
+    $project: {
+      surnom: 1,
+      niveau: 1,
+      dresseur: "$idDresseur",
+      statsEspece: "$espece.stats",
+
+      statBase: {
+        $add: [
+          "$espece.stats.hp",
+          "$espece.stats.attaque",
+          "$espece.stats.defense",
+          "$espece.stats.attaqueSpecial",
+          "$espece.stats.defenseSpecial",
+          "$espece.stats.vitesse"
+        ]
+      },
+
+      statBonus: {
+        $cond: [
+          { $eq: ["$objet", null] },
+          0,
+          {
+            $cond: [
+              { $eq: ["$objet.typeBonus", "flat"] },
+              "$objet.bonus.valeur",
+              {
+                $multiply: [
+                  "$objet.bonus.valeur",
+                  {
+                    $divide: [
+                      {
+                        $add: [
+                          "$espece.stats.hp",
+                          "$espece.stats.attaque",
+                          "$espece.stats.defense",
+                          "$espece.stats.attaqueSpecial",
+                          "$espece.stats.defenseSpecial",
+                          "$espece.stats.vitesse"
+                        ]
+                      },
+                      100
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+
+  {
+    $project: {
+      surnom: 1,
+      niveau: 1,
+      statFinale: { $add: ["$statBase", "$statBonus"] }
+    }
+  }
+]);
+
+
+// ======================================================
+// 2) TOP 10 DES POKÉMON LES PLUS PUISSANTS (RÉELS)
+// ======================================================
+
+db.pokemons_captures.aggregate([
+  // Pipeline précédent réutilisé
+  {
+    $lookup: {
+      from: "pokemon",
+      localField: "idEspece",
+      foreignField: "_id",
+      as: "espece"
+    }
+  },
+  { $unwind: "$espece" },
+
+  {
+    $project: {
+      surnom: 1,
+      espece: "$espece.nom",
+      statTotale: {
+        $add: [
+          "$espece.stats.hp",
+          "$espece.stats.attaque",
+          "$espece.stats.defense",
+          "$espece.stats.attaqueSpecial",
+          "$espece.stats.defenseSpecial",
+          "$espece.stats.vitesse"
+        ]
+      }
+    }
+  },
+
+  { $sort: { statTotale: -1 } },
+  { $limit: 10 }
+]);
+
+
+// ======================================================
+// 3) MEILLEURE ÉQUIPE POSSIBLE D’UN DRESSEUR (TOP 6)
+// ======================================================
+//
+// Objectif : sélectionner les 6 Pokémon ayant la stat réelle la plus élevée.
+//
+
+db.pokemons_captures.aggregate([
+  {
+    $match: {
+      idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id
+    }
+  },
+
+  // Joindre espèce
+  {
+    $lookup: {
+      from: "pokemon",
+      localField: "idEspece",
+      foreignField: "_id",
+      as: "espece"
+    }
+  },
+  { $unwind: "$espece" },
+
+  // Calcul stat totale
+  {
+    $project: {
+      surnom: 1,
+      espece: "$espece.nom",
+      statTotale: {
+        $add: [
+          "$espece.stats.hp",
+          "$espece.stats.attaque",
+          "$espece.stats.defense",
+          "$espece.stats.attaqueSpecial",
+          "$espece.stats.defenseSpecial",
+          "$espece.stats.vitesse"
+        ]
+      }
+    }
+  },
+
+  // Trier + limiter à 6 → meilleure équipe
+  { $sort: { statTotale: -1 } },
+  { $limit: 6 }
+]);
+
+
+// ======================================================
+// 4) NIVEAUX RESTANTS AVANT EVOLUTION
+// ======================================================
+
+db.pokemons_captures.aggregate([
+  {
+    $lookup: {
+      from: "pokemon",
+      localField: "idEspece",
+      foreignField: "_id",
+      as: "espece"
+    }
+  },
+  { $unwind: "$espece" },
+
+  {
+    $project: {
+      surnom: 1,
+      niveauActuel: "$niveau",
+      evolutionSuivante: "$espece.evolutions.evolutionSuivante",
+      condition: "$espece.evolutions.condition",
+
+      niveauxRestants: {
+        $cond: [
+          { $regexMatch: { input: "$espece.evolutions.condition", regex: /^Niveau\s+\d+/ } }, // condition commence par "Niveau"
+          
+          { // alors calcul
+            $subtract: [
+              {
+                $toInt: {
+                  $replaceAll: {
+                    input: "$espece.evolutions.condition",
+                    find: "Niveau ",
+                    replacement: ""
+                  }
+                }
+              },
+              "$niveau"
+            ]
+          },
+
+          null // sinon ne calcule pas
+        ]
+      }
+    }
+  }
+]);
+
+
+// ======================================================
+// 5) CLASSEMENT DES DRESSEURS PAR PUISSANCE MOYENNE
+// ======================================================
+
+db.dresseur.aggregate([
+  {
+    $lookup: {
+      from: "pokemons_captures",
+      localField: "_id",
+      foreignField: "idDresseur",
+      as: "pokemons"
+    }
+  },
+  { $unwind: "$pokemons" },
+
+  {
+    $lookup: {
+      from: "pokemon",
+      localField: "pokemons.idEspece",
+      foreignField: "_id",
+      as: "espece"
+    }
+  },
+  { $unwind: "$espece" },
+
+  {
+    $group: {
+      _id: "$_id",
+      nom: { $first: "$nom" },
+      puissanceMoyenne: {
+        $avg: {
+          $add: [
+            "$espece.stats.hp",
+            "$espece.stats.attaque",
+            "$espece.stats.defense",
+            "$espece.stats.attaqueSpecial",
+            "$espece.stats.defenseSpecial",
+            "$espece.stats.vitesse"
+          ]
+        }
+      },
+      total: { $sum: 1 }
+    }
+  },
+
+  { $sort: { puissanceMoyenne: -1 } }
+]);
+
+
+// ======================================================
+// 6) STATISTIQUES PAR CENTRE POKÉMON
+// ======================================================
+//
+// Pokémon actuellement en stock
+//
+
+db.centre_pokemon.aggregate([
+  { $unwind: "$historiqueMouvements" },
+
+  {
+    $group: {
+      _id: "$historiqueMouvements.idPokemonCapture",
+      balance: {
+        $sum: {
+          $switch: {
+            branches: [
+              { case: { $eq: ["$historiqueMouvements.type", "ENTREE"] }, then: 1 },
+              { case: { $eq: ["$historiqueMouvements.type", "SORTIE"] }, then: -1 }
+            ],
+            default: 0
+          }
+        }
+      }
+    }
+  },
+
+  { $match: { balance: { $gt: 0 } } },
+
+  {
+    $lookup: {
+      from: "pokemons_captures",
+      localField: "_id",
+      foreignField: "_id",
+      as: "pokemon"
+    }
+  }
+]);
+
+
+// ======================================================
+// 7) RÉPARTITION DES TYPES PAR DRESSEUR
+// ======================================================
+
+db.pokemons_captures.aggregate([
+  {
+    $match: {
+      idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id
+    }
+  },
+
+  {
+    $lookup: {
+      from: "pokemon",
+      localField: "idEspece",
+      foreignField: "_id",
+      as: "espece"
+    }
+  },
+  { $unwind: "$espece" },
+
+  {
+    $group: {
+      _id: "$espece.type",
+      total: { $sum: 1 }
+    }
+  },
+
+  { $sort: { total: -1 } }
+]);
+
+
+// ======================================================
+print("\n=== Agrégations avancées exécutées ===\n");

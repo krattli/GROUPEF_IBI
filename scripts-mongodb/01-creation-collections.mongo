@@ -1,0 +1,102 @@
+// ===============================
+// SCRIPT 01 : CREATION DES COLLECTIONS
+// ===============================
+
+use('pokedex');
+
+// ===============================
+// 1) Collection DESSEUR
+// ===============================
+// Schéma :
+// {
+//   _id: ObjectId,
+//   nom: String,
+//   idDresseur: String (code fonctionnel),
+//   dateCreation: Date,
+//   stats: {
+//     totalPokemon: Number,
+//     pokemonFavoris: [ObjectId]
+//   },
+//   equipe: [ObjectId]  // 0 à 6 Pokémon capturés
+// }
+
+db.createCollection('dresseur');
+
+
+// ===============================
+// 2) Collection ESPECES POKEMON
+// ===============================
+// Schéma :
+// {
+//   _id: ObjectId,
+//   numeroPokedex: Number,
+//   nom: String,
+//   generation: Number,
+//   region: String,
+//   type: String,
+//   stats: { hp, attaque, defense, attaqueSpecial, defenseSpecial, vitesse },
+//   evolutions: { preEvolution, evolutionSuivante, condition },
+//   capacites: [String]
+// }
+
+db.createCollection('pokemon');
+
+
+// ===============================
+// 3) Collection POKÉMON CAPTURÉS
+// ===============================
+// Schéma :
+// {
+//   _id: ObjectId,
+//   idDresseur: ObjectId,
+//   idEspece: ObjectId,
+//   surnom: String,
+//   niveau: Number,
+//   experience: Number,
+//   idObjet: ObjectId | null,
+//   dateCapture: Date
+// }
+
+db.createCollection('pokemons_captures');
+
+
+// ===============================
+// 4) Collection OBJET
+// ===============================
+// Schéma :
+// {
+//   _id: ObjectId,
+//   nom: String,
+//   description: String,
+//   bonus: { stat: String, valeur: Number },
+//   typeBonus: "flat" | "percent",
+//   categorie: String,
+//   generation: Number
+// }
+
+db.createCollection('objet');
+
+
+// ===============================
+// 5) Collection CENTRE POKEMON
+// ===============================
+// Schéma :
+// {
+//   _id: ObjectId,
+//   nom: String,
+//   region: String,
+//   capaciteMax: Number,
+//   stockActuel: Number,
+//   historiqueMouvements: [
+//       {
+//         idPokemonCapture: ObjectId,
+//         idDresseur: ObjectId,
+//         type: "ENTREE" | "SORTIE" | "SOIN",
+//         date: Date
+//       }
+//   ]
+// }
+
+db.createCollection('centre_pokemon');
+
+print("== Script 01 terminé : Collections créées ==");

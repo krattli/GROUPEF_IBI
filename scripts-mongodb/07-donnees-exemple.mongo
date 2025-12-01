@@ -1,0 +1,343 @@
+use('pokedex');
+
+print("\n=== INSERTION DES DRESSEURS ===\n");
+
+db.dresseur.deleteMany({});
+
+db.dresseur.insertMany([
+  {
+    nom: 'Sacha',
+    idDresseur: 'DR001',
+    dateCreation: new Date('2024-01-01'),
+    stats: { totalPokemon: 0, pokemonFavoris: [] },
+    equipe: []
+  },
+  {
+    nom: 'Ondine',
+    idDresseur: 'DR002',
+    dateCreation: new Date('2024-02-01'),
+    stats: { totalPokemon: 0, pokemonFavoris: [] },
+    equipe: []
+  },
+  {
+    nom: 'Pierre',
+    idDresseur: 'DR003',
+    dateCreation: new Date('2024-03-01'),
+    stats: { totalPokemon: 0, pokemonFavoris: [] },
+    equipe: []
+  },
+  {
+    nom: 'Régis',
+    idDresseur: 'DR004',
+    dateCreation: new Date('2024-04-01'),
+    stats: { totalPokemon: 0, pokemonFavoris: [] },
+    equipe: []
+  }
+]);
+
+const sacha = db.dresseur.findOne({ idDresseur: "DR001" });
+const ondine = db.dresseur.findOne({ idDresseur: "DR002" });
+const pierre = db.dresseur.findOne({ idDresseur: "DR003" });
+const regis = db.dresseur.findOne({ idDresseur: "DR004" });
+
+print("\n=== INSERTION DES ESPECES ===\n");
+
+db.pokemon.deleteMany({});
+
+db.pokemon.insertMany([
+  { numeroPokedex: 1, nom: 'Bulbizarre', generation: 1, region: 'Kanto', type: 'Plante',
+    stats: { hp: 45, attaque: 49, defense: 49, attaqueSpecial: 65, defenseSpecial: 65, vitesse: 45 },
+    evolutions: { preEvolution: null, evolutionSuivante: 2, condition: "Niveau 16" },
+    capacites: ['Vampigraine', 'Tranch\'Herbe', 'Fouet Lianes']
+  },
+  { numeroPokedex: 2, nom: 'Herbizarre', generation: 1, region: 'Kanto', type: 'Plante',
+    stats: { hp: 60, attaque: 62, defense: 63, attaqueSpecial: 80, defenseSpecial: 80, vitesse: 60 },
+    evolutions: { preEvolution: 1, evolutionSuivante: 3, condition: "Niveau 32" },
+    capacites: ['Vampigraine', 'Tranch\'Herbe']
+  },
+  { numeroPokedex: 3, nom: 'Florizarre', generation: 1, region: 'Kanto', type: 'Plante',
+    stats: { hp: 80, attaque: 82, defense: 83, attaqueSpecial: 100, defenseSpecial: 100, vitesse: 80 },
+    evolutions: { preEvolution: 2, evolutionSuivante: null, condition: null },
+    capacites: ['Lance-Soleil', 'Poudre Toxik']
+  },
+  { numeroPokedex: 4, nom: 'Salamèche', generation: 1, region: 'Kanto', type: 'Feu',
+    stats: { hp: 39, attaque: 52, defense: 43, attaqueSpecial: 60, defenseSpecial: 50, vitesse: 65 },
+    evolutions: { preEvolution: null, evolutionSuivante: 5, condition: "Niveau 16" },
+    capacites: ['Flammèche', 'Griffe']
+  },
+  { numeroPokedex: 5, nom: 'Reptincel', generation: 1, region: 'Kanto', type: 'Feu',
+    stats: { hp: 58, attaque: 64, defense: 58, attaqueSpecial: 80, defenseSpecial: 65, vitesse: 80 },
+    evolutions: { preEvolution: 4, evolutionSuivante: 6, condition: "Niveau 36" },
+    capacites: ['Flammèche', 'Lance-Flammes']
+  },
+  { numeroPokedex: 6, nom: 'Dracaufeu', generation: 1, region: 'Kanto', type: 'Feu',
+    stats: { hp: 78, attaque: 84, defense: 78, attaqueSpecial: 109, defenseSpecial: 85, vitesse: 100 },
+    evolutions: { preEvolution: 5, evolutionSuivante: null, condition: null },
+    capacites: ['Déflagration', 'Vol']
+  },
+  { numeroPokedex: 7, nom: 'Carapuce', generation: 1, region: 'Kanto', type: 'Eau',
+    stats: { hp: 44, attaque: 48, defense: 65, attaqueSpecial: 50, defenseSpecial: 64, vitesse: 43 },
+    evolutions: { preEvolution: null, evolutionSuivante: 8, condition: "Niveau 16" },
+    capacites: ['Écume', 'Pistolet à O']
+  },
+  { numeroPokedex: 8, nom: 'Carabaffe', generation: 1, region: 'Kanto', type: 'Eau',
+    stats: { hp: 59, attaque: 63, defense: 80, attaqueSpecial: 65, defenseSpecial: 80, vitesse: 58 },
+    evolutions: { preEvolution: 7, evolutionSuivante: 9, condition: "Niveau 36" },
+    capacites: ['Surf', 'Hydrocanon']
+  },
+  { numeroPokedex: 9, nom: 'Tortank', generation: 1, region: 'Kanto', type: 'Eau',
+    stats: { hp: 79, attaque: 83, defense: 100, attaqueSpecial: 85, defenseSpecial: 105, vitesse: 78 },
+    evolutions: { preEvolution: 8, evolutionSuivante: null, condition: null },
+    capacites: ['Hydrocanon', 'Laser Glace']
+  },
+  { numeroPokedex: 25, nom: 'Pikachu', generation: 1, region: 'Kanto', type: 'Électrik',
+    stats: { hp: 35, attaque: 55, defense: 40, attaqueSpecial: 50, defenseSpecial: 50, vitesse: 90 },
+    evolutions: { preEvolution: 172, evolutionSuivante: 26, condition: "Pierre Foudre" },
+    capacites: ['Tonnerre', 'Vive-Attaque']
+  },
+  { numeroPokedex: 26, nom: 'Raichu', generation: 1, region: 'Kanto', type: 'Électrik',
+    stats: { hp: 60, attaque: 90, defense: 55, attaqueSpecial: 90, defenseSpecial: 80, vitesse: 110 },
+    evolutions: { preEvolution: 25, evolutionSuivante: null, condition: null },
+    capacites: ['Tonnerre', 'Éclair']
+  },
+  { numeroPokedex: 39, nom: 'Rondoudou', generation: 1, region: 'Kanto', type: 'Normal',
+    stats: { hp: 115, attaque: 45, defense: 20, attaqueSpecial: 45, defenseSpecial: 25, vitesse: 20 },
+    evolutions: { preEvolution: null, evolutionSuivante: 40, condition: "Pierre Lune" },
+    capacites: ['Berceuse', 'Écho']
+  },
+  { numeroPokedex: 40, nom: 'Grodoudou', generation: 1, region: 'Kanto', type: 'Normal',
+    stats: { hp: 140, attaque: 70, defense: 45, attaqueSpecial: 75, defenseSpecial: 50, vitesse: 45 },
+    evolutions: { preEvolution: 39, evolutionSuivante: null, condition: null },
+    capacites: ['Écho', 'Chant Magique']
+  },
+  { numeroPokedex: 150, nom: 'Mewtwo', generation: 1, region: 'Kanto', type: 'Psy',
+    stats: { hp: 106, attaque: 110, defense: 90, attaqueSpecial: 154, defenseSpecial: 90, vitesse: 130 },
+    evolutions: { preEvolution: null, evolutionSuivante: null, condition: null },
+    capacites: ['Psyko', 'Aurasphère']
+  },
+  { numeroPokedex: 152, nom: 'Germignon', generation: 2, region: 'Johto', type: 'Plante',
+    stats: { hp: 45, attaque: 49, defense: 65, attaqueSpecial: 49, defenseSpecial: 65, vitesse: 45 },
+    evolutions: { preEvolution: null, evolutionSuivante: 153, condition: "Niveau 16" },
+    capacites: ['Tranch\'Herbe', 'Fouet Lianes']
+  },
+  { numeroPokedex: 153, nom: 'Macronium', generation: 2, region: 'Johto', type: 'Plante',
+    stats: { hp: 60, attaque: 62, defense: 80, attaqueSpecial: 63, defenseSpecial: 80, vitesse: 60 },
+    evolutions: { preEvolution: 152, evolutionSuivante: 154, condition: "Niveau 32" },
+    capacites: ['Tranch\'Herbe', 'Poudre Dodo']
+  },
+  { numeroPokedex: 154, nom: 'Méganium', generation: 2, region: 'Johto', type: 'Plante',
+    stats: { hp: 80, attaque: 82, defense: 100, attaqueSpecial: 83, defenseSpecial: 100, vitesse: 80 },
+    evolutions: { preEvolution: 153, evolutionSuivante: null, condition: null },
+    capacites: ['Lame Feuille', 'Soin']
+  },
+  { numeroPokedex: 155, nom: 'Héricendre', generation: 2, region: 'Johto', type: 'Feu',
+    stats: { hp: 39, attaque: 52, defense: 43, attaqueSpecial: 60, defenseSpecial: 50, vitesse: 65 },
+    evolutions: { preEvolution: null, evolutionSuivante: 156, condition: "Niveau 14" },
+    capacites: ['Flammèche', 'Griffe']
+  },
+  { numeroPokedex: 158, nom: 'Kaiminus', generation: 2, region: 'Johto', type: 'Eau',
+    stats: { hp: 50, attaque: 65, defense: 64, attaqueSpecial: 44, defenseSpecial: 48, vitesse: 43 },
+    evolutions: { preEvolution: null, evolutionSuivante: 159, condition: "Niveau 18" },
+    capacites: ['Morsure', 'Croc de Mort']
+  }
+]);
+
+print("\n=== INSERTION DES OBJETS ===\n");
+
+db.objet.deleteMany({});
+
+db.objet.insertMany([
+  {
+    nom: "Baie Sitrus",
+    description: "Restaure 25 PV.",
+    bonus: { stat: "hp", valeur: 25 },
+    typeBonus: "flat",
+    categorie: "soin",
+    generation: 3
+  },
+  {
+    nom: "Orbe Vie",
+    description: "Augmente de 30% la puissance.",
+    bonus: { stat: "attaqueSpecial", valeur: 30 },
+    typeBonus: "percent",
+    categorie: "combat",
+    generation: 4
+  },
+  {
+    nom: "Ceinture Force",
+    description: "Augmente défense de 40.",
+    bonus: { stat: "defense", valeur: 40 },
+    typeBonus: "flat",
+    categorie: "defense",
+    generation: 4
+  },
+  {
+    nom: "Restes",
+    description: "Régénère progressivement les PV.",
+    bonus: { stat: "hp", valeur: 10 },
+    typeBonus: "percent",
+    categorie: "soin",
+    generation: 2
+  },
+  {
+    nom: "Lunettes Choix",
+    description: "Boost Attaque Spéciale de 50%.",
+    bonus: { stat: "attaqueSpecial", valeur: 50 },
+    typeBonus: "percent",
+    categorie: "combat",
+    generation: 3
+  },
+  {
+    nom: "Bandeau Choix",
+    description: "Boost Attaque de 50%.",
+    bonus: { stat: "attaque", valeur: 50 },
+    typeBonus: "percent",
+    categorie: "combat",
+    generation: 3
+  },
+  {
+    nom: "Roche Royale",
+    description: "Augmente les chances d’effet secondaire.",
+    bonus: { stat: "vitesse", valeur: 20 },
+    typeBonus: "flat",
+    categorie: "combat",
+    generation: 2
+  }
+]);
+
+const baie = db.objet.findOne({ nom: "Baie Sitrus" });
+const orbe = db.objet.findOne({ nom: "Orbe Vie" });
+const lunettes = db.objet.findOne({ nom: "Lunettes Choix" });
+const bandeau = db.objet.findOne({ nom: "Bandeau Choix" });
+
+print("\n=== INSERTION DES CENTRES POKEMON ===\n");
+
+db.centre_pokemon.deleteMany({});
+
+db.centre_pokemon.insertMany([
+  {
+    nom: "Centre Pokémon Kanto",
+    region: "Kanto",
+    capaciteMax: 2000,
+    stockActuel: 0,
+    historiqueMouvements: []
+  },
+  {
+    nom: "Centre Pokémon Johto",
+    region: "Johto",
+    capaciteMax: 1500,
+    stockActuel: 0,
+    historiqueMouvements: []
+  }
+]);
+
+const centreKanto = db.centre_pokemon.findOne({ region: "Kanto" });
+const centreJohto = db.centre_pokemon.findOne({ region: "Johto" });
+
+print("\n=== INSERTION POKEMON CAPTURES ===\n");
+
+db.pokemons_captures.deleteMany({});
+
+// ===== Sacha =====
+db.pokemons_captures.insertMany([
+  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 25 })._id, surnom: "Pika", niveau: 42, experience: 150000, idObjet: orbe._id, dateCapture: new Date() },
+  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 1 })._id, surnom: "Bubu", niveau: 16, experience: 40000, idObjet: baie._id, dateCapture: new Date() },
+  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 4 })._id, surnom: "Draco", niveau: 12, experience: 20000, idObjet: null, dateCapture: new Date() },
+  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 150 })._id, surnom: "M2", niveau: 70, experience: 600000, idObjet: lunettes._id, dateCapture: new Date() },
+  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 6 })._id, surnom: "Char", niveau: 52, experience: 230000, idObjet: bandeau._id, dateCapture: new Date() },
+  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 9 })._id, surnom: "Tanky", niveau: 48, experience: 180000, idObjet: null, dateCapture: new Date() },
+  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 39 })._id, surnom: "Doudou", niveau: 28, experience: 40000, idObjet: baie._id, dateCapture: new Date() }
+]);
+
+// ===== Ondine =====
+db.pokemons_captures.insertMany([
+  { idDresseur: ondine._id, idEspece: db.pokemon.findOne({ numeroPokedex: 7 })._id, surnom: "Squirt", niveau: 35, experience: 100000, idObjet: null, dateCapture: new Date() },
+  { idDresseur: ondine._id, idEspece: db.pokemon.findOne({ numeroPokedex: 9 })._id, surnom: "Torty", niveau: 50, experience: 200000, idObjet: bandeau._id, dateCapture: new Date() },
+  { idDresseur: ondine._id, idEspece: db.pokemon.findOne({ numeroPokedex: 152 })._id, surnom: "Germi", niveau: 20, experience: 30000, idObjet: baie._id, dateCapture: new Date() },
+  { idDresseur: ondine._id, idEspece: db.pokemon.findOne({ numeroPokedex: 158 })._id, surnom: "Kai", niveau: 27, experience: 50000, idObjet: null, dateCapture: new Date() },
+  { idDresseur: ondine._id, idEspece: db.pokemon.findOne({ numeroPokedex: 39 })._id, surnom: "Jigg", niveau: 18, experience: 20000, idObjet: baie._id, dateCapture: new Date() }
+]);
+
+// ===== Pierre =====
+db.pokemons_captures.insertMany([
+  { idDresseur: pierre._id, idEspece: db.pokemon.findOne({ numeroPokedex: 1 })._id, surnom: "Herba", niveau: 17, experience: 42000, idObjet: null, dateCapture: new Date() },
+  { idDresseur: pierre._id, idEspece: db.pokemon.findOne({ numeroPokedex: 6 })._id, surnom: "FeuFeu", niveau: 40, experience: 160000, idObjet: orbe._id, dateCapture: new Date() },
+  { idDresseur: pierre._id, idEspece: db.pokemon.findOne({ numeroPokedex: 3 })._id, surnom: "MegaFlore", niveau: 55, experience: 300000, idObjet: lunettes._id, dateCapture: new Date() },
+  { idDresseur: pierre._id, idEspece: db.pokemon.findOne({ numeroPokedex: 26 })._id, surnom: "Raich", niveau: 37, experience: 120000, idObjet: null, dateCapture: new Date() },
+  { idDresseur: pierre._id, idEspece: db.pokemon.findOne({ numeroPokedex: 40 })._id, surnom: "Loud", niveau: 32, experience: 80000, idObjet: baie._id, dateCapture: new Date() }
+]);
+
+// ===== Régis =====
+db.pokemons_captures.insertMany([
+  { idDresseur: regis._id, idEspece: db.pokemon.findOne({ numeroPokedex: 152 })._id, surnom: "Leafy", niveau: 22, experience: 35000, idObjet: null, dateCapture: new Date() },
+  { idDresseur: regis._id, idEspece: db.pokemon.findOne({ numeroPokedex: 158 })._id, surnom: "Snap", niveau: 30, experience: 70000, idObjet: bandeau._id, dateCapture: new Date() },
+  { idDresseur: regis._id, idEspece: db.pokemon.findOne({ numeroPokedex: 25 })._id, surnom: "Volt", niveau: 40, experience: 150000, idObjet: orbe._id, dateCapture: new Date() },
+  { idDresseur: regis._id, idEspece: db.pokemon.findOne({ numeroPokedex: 5 })._id, surnom: "Torch", niveau: 28, experience: 60000, idObjet: null, dateCapture: new Date() },
+  { idDresseur: regis._id, idEspece: db.pokemon.findOne({ numeroPokedex: 154 })._id, surnom: "Bloss", niveau: 48, experience: 180000, idObjet: lunettes._id, dateCapture: new Date() }
+]);
+
+print("\n=== MISE À JOUR DES COMPTEURS DRESSEURS ===\n");
+
+db.dresseur.updateOne({ _id: sacha._id }, { $set: { "stats.totalPokemon": 7 } });
+db.dresseur.updateOne({ _id: ondine._id }, { $set: { "stats.totalPokemon": 5 } });
+db.dresseur.updateOne({ _id: pierre._id }, { $set: { "stats.totalPokemon": 5 } });
+db.dresseur.updateOne({ _id: regis._id }, { $set: { "stats.totalPokemon": 5 } });
+
+print("\n=== HISTORIQUE CENTRE POKEMON ===\n");
+
+// On prend quelques Pokémon capturés
+const pcList = db.pokemons_captures.find().toArray();
+
+// ENTREE au Centre Kanto
+pcList.slice(0, 8).forEach(p => {
+  db.centre_pokemon.updateOne(
+    { _id: centreKanto._id },
+    {
+      $inc: { stockActuel: 1 },
+      $push: {
+        historiqueMouvements: {
+          idPokemonCapture: p._id,
+          idDresseur: p.idDresseur,
+          type: "ENTREE",
+          date: new Date()
+        }
+      }
+    }
+  );
+});
+
+// SORTIE pour 3 Pokémon
+pcList.slice(2, 5).forEach(p => {
+  db.centre_pokemon.updateOne(
+    { _id: centreKanto._id },
+    {
+      $inc: { stockActuel: -1 },
+      $push: {
+        historiqueMouvements: {
+          idPokemonCapture: p._id,
+          idDresseur: p.idDresseur,
+          type: "SORTIE",
+          date: new Date()
+        }
+      }
+    }
+  );
+});
+
+// SOIN au Centre Johto
+pcList.slice(10, 15).forEach(p => {
+  db.centre_pokemon.updateOne(
+    { _id: centreJohto._id },
+    {
+      $push: {
+        historiqueMouvements: {
+          idPokemonCapture: p._id,
+          idDresseur: p.idDresseur,
+          type: "SOIN",
+          date: new Date()
+        }
+      }
+    }
+  );
+});
+

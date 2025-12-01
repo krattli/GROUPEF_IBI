@@ -1,0 +1,188 @@
+// =====================================
+// SCRIPT 05 : CRUD CENTRE POKEMON
+// =====================================
+
+use('pokedex');
+
+print("\n=== Gestion des Centres Pokémon ===\n");
+
+
+// =====================================
+// 1) CREATE : créer un centre Pokémon
+// =====================================
+
+db.centre_pokemon.insertOne({
+  nom: "Centre Pokémon de Kanto",
+  region: "Kanto",
+  capaciteMax: 2000,
+  stockActuel: 0,
+  historiqueMouvements: []
+});
+
+db.centre_pokemon.insertOne({
+  nom: "Centre Pokémon de Johto",
+  region: "Johto",
+  capaciteMax: 1500,
+  stockActuel: 0,
+  historiqueMouvements: []
+});
+
+
+// =====================================
+// 2) READ : lecture des centres Pokémon
+// =====================================
+
+// Tous les centres
+db.centre_pokemon.find();
+
+// Un centre par nom
+db.centre_pokemon.findOne({ nom: "Centre Pokémon de Kanto" });
+
+// Centres d'une région
+db.centre_pokemon.find({ region: "Kanto" });
+
+
+// =====================================
+// 3) Fonction générique : Enregistrer un mouvement
+// =====================================
+//
+// types possibles : "ENTREE", "SORTIE", "SOIN"
+//
+// ENTREE  → stockActuel++
+// SORTIE  → stockActuel--
+// SOIN    → stockActuel inchangé
+//
+
+function enregistrerMouvement(idCentre, idPokemonCapture, idDresseur, type) {
+
+  const increment =
+    type === "ENTREE" ? 1 :
+    type === "SORTIE" ? -1 :
+    0; // SOIN
+
+  // Vérifier capacité max si ENTREE
+  if (type === "ENTREE") {
+    const centre = db.centre_pokemon.findOne({ _id: idCentre });
+    if (centre.stockActuel >= centre.capaciteMax) {
+      print("❌ ERREUR : Capacité maximale atteinte !");
+      return;
+    }
+  }
+
+  db.centre_pokemon.updateOne(
+    { _id: idCentre },
+    {
+      $inc: { stockActuel: increment },
+      $push: {
+        historiqueMouvements: {
+          idPokemonCapture: idPokemonCapture,
+          idDresseur: idDresseur,
+          type: type,
+          date: new Date()
+        }
+      }
+    }
+  );
+
+  print("✔ Mouvement enregistré : " + type);
+}
+
+
+// =====================================
+// 4) Exemple : entrée d’un Pokémon capturé
+// =====================================
+
+// On récupère le premier centre (Kanto)
+const centreKanto = db.centre_pokemon.findOne({ region: "Kanto" });
+
+// On prend un Pokémon capturé existant
+const pkmn = db.pokemons_captures.findOne();
+if (pkmn) {
+  enregistrerMouvement(centreKanto._id, pkmn._id, pkmn.idDresseur, "ENTREE");
+}
+
+
+// =====================================
+// 5) Exemple : soin d’un Pokémon (SOIN)
+// =====================================
+
+if (pkmn) {
+  enregistrerMouvement(centreKanto._id, pkmn._id, pkmn.idDresseur, "SOIN");
+}
+
+
+// =====================================
+// 6) Exemple : sortie d’un Pokémon
+// =====================================
+
+if (pkmn) {
+  enregistrerMouvement(centreKanto._id, pkmn._id, pkmn.idDresseur, "SORTIE");
+}
+
+
+// =====================================
+// 7) READ : Historique complet d’un centre
+// =====================================
+
+// Historique complet
+db.centre_pokemon.findOne(
+  { region: "Kanto" },
+  { historiqueMouvements: 1, _id: 0 }
+);
+
+// Historique filtré (only ENTREE)
+db.centre_pokemon.findOne(
+  { region: "Kanto" },
+  {
+    historiqueMouvements: {
+      $filter: {
+        input: "$historiqueMouvements",
+        as: "m",
+        cond: { $eq: ["$$m.type", "ENTREE"] }
+      }
+    }
+  }
+);
+
+
+// =====================================
+// 8) Stock actuel — Pokémon actuellement présents
+// =====================================
+//
+// On récupère tous les mouvements
+// On calcule : ENTREE – SORTIE
+//
+
+db.centre_pokemon.aggregate([
+  { $match: { region: "Kanto" } },
+  { $unwind: "$historiqueMouvements" },
+  {
+    $group: {
+      _id: "$historiqueMouvements.idPokemonCapture",
+      total: {
+        $sum: {
+          $switch: {
+            branches: [
+              { case: { $eq: ["$historiqueMouvements.type", "ENTREE"] }, then: 1 },
+              { case: { $eq: ["$historiqueMouvements.type", "SORTIE"] }, then: -1 }
+            ],
+            default: 0
+          }
+        }
+      }
+    }
+  },
+  {
+    $match: { total: { $gt: 0 } } // Pokémon présents au centre
+  },
+  {
+    $lookup: {
+      from: "pokemons_captures",
+      localField: "_id",
+      foreignField: "_id",
+      as: "pokemon"
+    }
+  }
+]);
+
+print("\n=== Centre Pokémon opérationnel ===\n");

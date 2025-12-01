@@ -1,0 +1,203 @@
+// =====================================
+// SCRIPT 03 : CRUD POKEMON (Espèces + Capturés)
+// =====================================
+
+use('pokedex');
+
+print("\n=== CRUD Pokémon ===\n");
+
+// -------------------------------------
+// SECTION 1 : CRUD ESPÈCES
+// -------------------------------------
+
+// ========== CREATE (Espèce Pokémon) ==========
+db.pokemon.insertOne({
+  numeroPokedex: 25,
+  nom: "Pikachu",
+  region: "Kanto",
+  type: "Électrik",
+  stats: {
+    hp: 35, attaque: 55, defense: 40,
+    attaqueSpecial: 50, defenseSpecial: 50, vitesse: 90
+  },
+  evolutions: {
+    preEvolution: 172,
+    evolutionSuivante: 26,
+    condition: "Pierre Foudre"
+  },
+  capacites: ["Éclair", "Tonnerre", "Électacle"]
+});
+
+// ========== READ ==========
+db.pokemon.find();                 // lire toutes les espèces
+db.pokemon.findOne({ numeroPokedex: 25 });   // lire par numéro Pokédex
+db.pokemon.find({ type: "Feu" });           // lire par type
+db.pokemon.find({ nom: { $regex: "Pika", $options: "i" } }); // recherche partielle
+
+// ========== UPDATE (Espèce Pokémon) ==========
+db.pokemon.updateOne(
+  { numeroPokedex: 25 },
+  { $set: { nom: "Pikachu Classique" } }
+);
+
+// ========== DELETE ==========
+db.pokemon.deleteOne({ numeroPokedex: 151 });
+
+
+// -------------------------------------
+// SECTION 2 : CRUD POKEMON CAPTURÉS
+// -------------------------------------
+
+// ========== CREATE (Pokémon capturé) ==========
+// Fonction : Ajouter un Pokémon capturé
+// • ajoute le Pokémon dans pokemons_captures
+// • incrémente le total de Pokémon du dresseur
+// • ajoute une entrée dans le centre Pokémon
+
+// =================== Étape 1 : récupérer dresseur + espèce ===================
+
+const d = db.dresseur.findOne({ idDresseur: "DR001" });
+const especePika = db.pokemon.findOne({ numeroPokedex: 25 });
+const objet = db.objet.findOne({ nom: "Orbe Vie" }); // peut être null
+
+db.pokemons_captures.insertOne({
+  idDresseur: d._id,
+  idEspece: especePika._id,
+  surnom: "PikaLeRoi",
+  niveau: 42,
+  experience: 152340,
+  idObjet: objet ? objet._id : null,
+  dateCapture: new Date()
+});
+
+// =================== Étape 2 : mettre à jour stats dresseur ===================
+
+db.dresseur.updateOne(
+  { _id: d._id },
+  { $inc: { "stats.totalPokemon": 1 } }
+);
+
+// =================== Étape 3 : enregistrement au Centre Pokémon ===================
+
+const centre = db.centre_pokemon.findOne(); // on prend le premier centre pour simplifier
+
+db.centre_pokemon.updateOne(
+  { _id: centre._id },
+  {
+    $inc: { stockActuel: 1 },
+    $push: {
+      historiqueMouvements: {
+        idPokemonCapture: db.pokemons_captures.findOne({ surnom: "PikaLeRoi" })._id,
+        idDresseur: d._id,
+        type: "ENTREE",
+        date: new Date()
+      }
+    }
+  }
+);
+
+
+// =====================================
+// READ (Pokémon capturés)
+// =====================================
+
+// Lister tous les Pokémon capturés
+db.pokemons_captures.find();
+
+// Lister les Pokémon d’un dresseur
+db.pokemons_captures.find({ idDresseur: d._id });
+
+// Chercher par niveau
+db.pokemons_captures.find({ niveau: { $gte: 40, $lte: 50 } });
+
+// Chercher par surnom
+db.pokemons_captures.find({ surnom: { $regex: "pika", $options: "i" } });
+
+
+// =====================================
+// UPDATE (Pokémon capturé)
+// =====================================
+
+// Modifier niveau / XP / objet / surnom
+db.pokemons_captures.updateOne(
+  { surnom: "PikaLeRoi" },
+  {
+    $set: {
+      niveau: 50,
+      experience: 200000,
+      surnom: "PikaChampion",
+      idObjet: objet ? objet._id : null
+    }
+  }
+);
+
+
+// =====================================
+// LOGIQUE EVOLUTION : savoir si évolue bientôt
+// =====================================
+
+db.pokemons_captures.aggregate([
+  { $match: { surnom: "PikaChampion" } },
+
+  {
+    $lookup: {
+      from: "pokemon",
+      localField: "idEspece",
+      foreignField: "_id",
+      as: "espece"
+    }
+  },
+  { $unwind: "$espece" },
+
+  {
+    $project: {
+      surnom: 1,
+      niveau: 1,
+      espece: "$espece.nom",
+      prochaineEvolution: "$espece.evolutions.evolutionSuivante",
+      condition: "$espece.evolutions.condition"
+    }
+  }
+]);
+
+
+// =====================================
+// DELETE Pokémon capturé
+// =====================================
+
+const cible = db.pokemons_captures.findOne({ surnom: "PikaChampion" });
+
+if (cible) {
+
+  // 1) retirer du dresseur (stats + équipe + favoris)
+  db.dresseur.updateOne(
+    { _id: cible.idDresseur },
+    {
+      $inc: { "stats.totalPokemon": -1 },
+      $pull: {
+        equipe: cible._id
+      }
+    }
+  );
+
+  // 2) supprimer du pokémon capturé
+  db.pokemons_captures.deleteOne({ _id: cible._id });
+
+  // 3) enregistrer la sortie dans le centre Pokémon
+  db.centre_pokemon.updateOne(
+    { },
+    {
+      $inc: { stockActuel: -1 },
+      $push: {
+        historiqueMouvements: {
+          idPokemonCapture: cible._id,
+          idDresseur: cible.idDresseur,
+          type: "SORTIE",
+          date: new Date()
+        }
+      }
+    }
+  );
+}
+
+print("\n=== CRUD Pokémon terminé ===\n");

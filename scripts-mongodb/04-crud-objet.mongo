@@ -1,0 +1,105 @@
+// =====================================
+// SCRIPT 04 : CRUD OBJETS (Objet tenu par un Pokémon)
+// =====================================
+
+use('pokedex');
+
+print("\n=== CRUD Objets ===\n");
+
+// =====================================
+// CREATE
+// =====================================
+
+// Exemple d'insertion multiple d'objets
+db.objet.insertMany([
+  {
+    nom: "Baie Sitrus",
+    description: "Restaure 25 PV pendant le combat.",
+    bonus: { stat: "hp", valeur: 25 },
+    typeBonus: "flat",
+    categorie: "soin",
+    generation: 3
+  },
+  {
+    nom: "Orbe Vie",
+    description: "Augmente de 30% la puissance des capacités, mais blesse le lanceur.",
+    bonus: { stat: "attaqueSpecial", valeur: 30 },
+    typeBonus: "percent",
+    categorie: "combat",
+    generation: 4
+  },
+  {
+    nom: "Ceinture Force",
+    description: "Empêche le Pokémon d'être mis K.O. en un coup.",
+    bonus: { stat: "defense", valeur: 40 },
+    typeBonus: "flat",
+    categorie: "defense",
+    generation: 4
+  },
+  {
+    nom: "Lunettes Choix",
+    description: "Augmente l’Attaque Spéciale de 50%, mais limite les capacités.",
+    bonus: { stat: "attaqueSpecial", valeur: 50 },
+    typeBonus: "percent",
+    categorie: "combat",
+    generation: 3
+  }
+]);
+
+
+// =====================================
+// READ
+// =====================================
+
+// Lire tous les objets
+db.objet.find();
+
+// Lire un objet par nom exact
+db.objet.findOne({ nom: "Orbe Vie" });
+
+// Recherche par catégorie
+db.objet.find({ categorie: "combat" });
+
+// Recherche partielle
+db.objet.find({ nom: { $regex: "baie", $options: "i" } });
+
+
+// =====================================
+// UPDATE
+// =====================================
+
+// Modifier description ou bonus
+db.objet.updateOne(
+  { nom: "Baie Sitrus" },
+  { 
+    $set: { 
+      description: "Restaure 30 PV pendant le combat.",
+      bonus: { stat: "hp", valeur: 30 }
+    }
+  }
+);
+
+
+// =====================================
+// DELETE
+// =====================================
+//
+// Lorsqu’on supprime un objet, tout Pokémon qui le tenait
+// doit avoir idObjet = null
+//
+
+const obj = db.objet.findOne({ nom: "Orbe Vie" });
+
+if (obj) {
+
+  // 1) retirer l'objet de tous les Pokémon capturés
+  db.pokemons_captures.updateMany(
+    { idObjet: obj._id },
+    { $set: { idObjet: null } }
+  );
+
+  // 2) supprimer l'objet
+  db.objet.deleteOne({ _id: obj._id });
+}
+
+print("\n=== CRUD Objets terminé ===\n");
