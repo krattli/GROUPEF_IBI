@@ -35,10 +35,6 @@ db.dresseur.insertMany([
   }
 ]);
 
-const sacha = db.dresseur.findOne({ idDresseur: "DR001" });
-const ondine = db.dresseur.findOne({ idDresseur: "DR002" });
-const pierre = db.dresseur.findOne({ idDresseur: "DR003" });
-const regis = db.dresseur.findOne({ idDresseur: "DR004" });
 
 print("\n=== INSERTION DES ESPECES ===\n");
 
@@ -240,41 +236,225 @@ db.pokemons_captures.deleteMany({});
 
 // ===== Sacha =====
 db.pokemons_captures.insertMany([
-  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 25 })._id, surnom: "Pika", niveau: 42, experience: 150000, idObjet: orbe._id, dateCapture: new Date() },
-  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 1 })._id, surnom: "Bubu", niveau: 16, experience: 40000, idObjet: baie._id, dateCapture: new Date() },
-  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 4 })._id, surnom: "Draco", niveau: 12, experience: 20000, idObjet: null, dateCapture: new Date() },
-  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 150 })._id, surnom: "M2", niveau: 70, experience: 600000, idObjet: lunettes._id, dateCapture: new Date() },
-  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 6 })._id, surnom: "Char", niveau: 52, experience: 230000, idObjet: bandeau._id, dateCapture: new Date() },
-  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 9 })._id, surnom: "Tanky", niveau: 48, experience: 180000, idObjet: null, dateCapture: new Date() },
-  { idDresseur: sacha._id, idEspece: db.pokemon.findOne({ numeroPokedex: 39 })._id, surnom: "Doudou", niveau: 28, experience: 40000, idObjet: baie._id, dateCapture: new Date() }
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 25 })._id,
+    surnom: "Pika",
+    niveau: 42,
+    experience: 150000,
+    idObjet: db.objet.findOne({ nom: "Orbe Vie" })._id,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 1 })._id,
+    surnom: "Bubu",
+    niveau: 16,
+    experience: 40000,
+    idObjet: db.objet.findOne({ nom: "Baie Sitrus" })._id,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 4 })._id,
+    surnom: "Draco",
+    niveau: 12,
+    experience: 20000,
+    idObjet: null,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 150 })._id,
+    surnom: "M2",
+    niveau: 70,
+    experience: 600000,
+    idObjet: db.objet.findOne({ nom: "Lunettes Choix" })._id,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 6 })._id,
+    surnom: "Char",
+    niveau: 52,
+    experience: 230000,
+    idObjet: db.objet.findOne({ nom: "Bandeau Choix" })._id,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 9 })._id,
+    surnom: "Tanky",
+    niveau: 48,
+    experience: 180000,
+    idObjet: null,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR001" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 39 })._id,
+    surnom: "Doudou",
+    niveau: 28,
+    experience: 40000,
+    idObjet: db.objet.findOne({ nom: "Baie Sitrus" })._id,
+    dateCapture: new Date()
+  }
 ]);
+
+
 
 // ===== Ondine =====
 db.pokemons_captures.insertMany([
-  { idDresseur: ondine._id, idEspece: db.pokemon.findOne({ numeroPokedex: 7 })._id, surnom: "Squirt", niveau: 35, experience: 100000, idObjet: null, dateCapture: new Date() },
-  { idDresseur: ondine._id, idEspece: db.pokemon.findOne({ numeroPokedex: 9 })._id, surnom: "Torty", niveau: 50, experience: 200000, idObjet: bandeau._id, dateCapture: new Date() },
-  { idDresseur: ondine._id, idEspece: db.pokemon.findOne({ numeroPokedex: 152 })._id, surnom: "Germi", niveau: 20, experience: 30000, idObjet: baie._id, dateCapture: new Date() },
-  { idDresseur: ondine._id, idEspece: db.pokemon.findOne({ numeroPokedex: 158 })._id, surnom: "Kai", niveau: 27, experience: 50000, idObjet: null, dateCapture: new Date() },
-  { idDresseur: ondine._id, idEspece: db.pokemon.findOne({ numeroPokedex: 39 })._id, surnom: "Jigg", niveau: 18, experience: 20000, idObjet: baie._id, dateCapture: new Date() }
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR002" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 7 })._id,
+    surnom: "Squirt",
+    niveau: 35,
+    experience: 100000,
+    idObjet: null,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR002" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 9 })._id,
+    surnom: "Torty",
+    niveau: 50,
+    experience: 200000,
+    idObjet: db.objet.findOne({ nom: "Bandeau Choix" })._id,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR002" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 152 })._id,
+    surnom: "Germi",
+    niveau: 20,
+    experience: 30000,
+    idObjet: db.objet.findOne({ nom: "Baie Sitrus" })._id,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR002" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 158 })._id,
+    surnom: "Kai",
+    niveau: 27,
+    experience: 50000,
+    idObjet: null,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR002" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 39 })._id,
+    surnom: "Jigg",
+    niveau: 18,
+    experience: 20000,
+    idObjet: db.objet.findOne({ nom: "Baie Sitrus" })._id,
+    dateCapture: new Date()
+  }
 ]);
+
+
 
 // ===== Pierre =====
 db.pokemons_captures.insertMany([
-  { idDresseur: pierre._id, idEspece: db.pokemon.findOne({ numeroPokedex: 1 })._id, surnom: "Herba", niveau: 17, experience: 42000, idObjet: null, dateCapture: new Date() },
-  { idDresseur: pierre._id, idEspece: db.pokemon.findOne({ numeroPokedex: 6 })._id, surnom: "FeuFeu", niveau: 40, experience: 160000, idObjet: orbe._id, dateCapture: new Date() },
-  { idDresseur: pierre._id, idEspece: db.pokemon.findOne({ numeroPokedex: 3 })._id, surnom: "MegaFlore", niveau: 55, experience: 300000, idObjet: lunettes._id, dateCapture: new Date() },
-  { idDresseur: pierre._id, idEspece: db.pokemon.findOne({ numeroPokedex: 26 })._id, surnom: "Raich", niveau: 37, experience: 120000, idObjet: null, dateCapture: new Date() },
-  { idDresseur: pierre._id, idEspece: db.pokemon.findOne({ numeroPokedex: 40 })._id, surnom: "Loud", niveau: 32, experience: 80000, idObjet: baie._id, dateCapture: new Date() }
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR003" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 1 })._id,
+    surnom: "Herba",
+    niveau: 17,
+    experience: 42000,
+    idObjet: null,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR003" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 6 })._id,
+    surnom: "FeuFeu",
+    niveau: 40,
+    experience: 160000,
+    idObjet: db.objet.findOne({ nom: "Orbe Vie" })._id,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR003" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 3 })._id,
+    surnom: "MegaFlore",
+    niveau: 55,
+    experience: 300000,
+    idObjet: db.objet.findOne({ nom: "Lunettes Choix" })._id,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR003" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 26 })._id,
+    surnom: "Raich",
+    niveau: 37,
+    experience: 120000,
+    idObjet: null,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR003" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 40 })._id,
+    surnom: "Loud",
+    niveau: 32,
+    experience: 80000,
+    idObjet: db.objet.findOne({ nom: "Baie Sitrus" })._id,
+    dateCapture: new Date()
+  }
 ]);
+
+
 
 // ===== Régis =====
 db.pokemons_captures.insertMany([
-  { idDresseur: regis._id, idEspece: db.pokemon.findOne({ numeroPokedex: 152 })._id, surnom: "Leafy", niveau: 22, experience: 35000, idObjet: null, dateCapture: new Date() },
-  { idDresseur: regis._id, idEspece: db.pokemon.findOne({ numeroPokedex: 158 })._id, surnom: "Snap", niveau: 30, experience: 70000, idObjet: bandeau._id, dateCapture: new Date() },
-  { idDresseur: regis._id, idEspece: db.pokemon.findOne({ numeroPokedex: 25 })._id, surnom: "Volt", niveau: 40, experience: 150000, idObjet: orbe._id, dateCapture: new Date() },
-  { idDresseur: regis._id, idEspece: db.pokemon.findOne({ numeroPokedex: 5 })._id, surnom: "Torch", niveau: 28, experience: 60000, idObjet: null, dateCapture: new Date() },
-  { idDresseur: regis._id, idEspece: db.pokemon.findOne({ numeroPokedex: 154 })._id, surnom: "Bloss", niveau: 48, experience: 180000, idObjet: lunettes._id, dateCapture: new Date() }
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR004" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 152 })._id,
+    surnom: "Leafy",
+    niveau: 22,
+    experience: 35000,
+    idObjet: null,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR004" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 158 })._id,
+    surnom: "Snap",
+    niveau: 30,
+    experience: 70000,
+    idObjet: db.objet.findOne({ nom: "Bandeau Choix" })._id,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR004" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 25 })._id,
+    surnom: "Volt",
+    niveau: 40,
+    experience: 150000,
+    idObjet: db.objet.findOne({ nom: "Orbe Vie" })._id,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR004" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 5 })._id,
+    surnom: "Torch",
+    niveau: 28,
+    experience: 60000,
+    idObjet: null,
+    dateCapture: new Date()
+  },
+  {
+    idDresseur: db.dresseur.findOne({ idDresseur: "DR004" })._id,
+    idEspece: db.pokemon.findOne({ numeroPokedex: 154 })._id,
+    surnom: "Bloss",
+    niveau: 48,
+    experience: 180000,
+    idObjet: db.objet.findOne({ nom: "Lunettes Choix" })._id,
+    dateCapture: new Date()
+  }
 ]);
+
+
 
 print("\n=== MISE À JOUR DES COMPTEURS DRESSEURS ===\n");
 

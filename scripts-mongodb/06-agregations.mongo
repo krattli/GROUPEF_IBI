@@ -58,7 +58,7 @@ db.pokemons_captures.aggregate([
 
       statBonus: {
         $cond: [
-          { $eq: ["$objet", null] },
+          { $ifNull: ["$objet", true] },
           0,
           {
             $cond: [
@@ -294,12 +294,21 @@ db.dresseur.aggregate([
 //
 
 db.centre_pokemon.aggregate([
-  { $unwind: "$historiqueMouvements" },
+  // Déplier l'historique des mouvements
+  { 
+    $unwind: { 
+      path: "$historiqueMouvements", 
+      preserveNullAndEmptyArrays: true 
+    } 
+  },
 
+  // Calculer le balance par centre (ENTREE = +1, SORTIE = -1)
   {
     $group: {
-      _id: "$historiqueMouvements.idPokemonCapture",
-      balance: {
+      _id: "$_id",
+      nom: { $first: "$nom" },
+      capaciteMax: { $first: "$capaciteMax" },
+      stockCalcule: {
         $sum: {
           $switch: {
             branches: [
@@ -313,16 +322,7 @@ db.centre_pokemon.aggregate([
     }
   },
 
-  { $match: { balance: { $gt: 0 } } },
-
-  {
-    $lookup: {
-      from: "pokemons_captures",
-      localField: "_id",
-      foreignField: "_id",
-      as: "pokemon"
-    }
-  }
+  { $sort: { nom: 1 } }
 ]);
 
 
