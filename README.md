@@ -8,7 +8,7 @@ UE : Bases de Données NoSQL — Année 2025/2026
 # 📂 Structure du projet
 
 ```
-inf3/
+groupF_IBI/
 ├── projet.pdf
 ├── rapport/
 │   └── rapport.md
@@ -108,7 +108,7 @@ Agrégations :
 
 ---
 
-# 📘 Exemple d’utilisation
+# 📘 Exemple d’utilisation au niveau applicatif (javascript)
 
 ```javascript
 use('pokedex');
